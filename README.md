@@ -27,6 +27,7 @@ Abaixo consta listagem das tecnologias utilizadas para desenvolvimento do projet
 - Java 8+
 - Maven
 - Struts 2
+- HTML/CSS/Javascript
 - Bootstrap 5
 - H2
 - Jetty
