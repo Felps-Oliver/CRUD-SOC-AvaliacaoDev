@@ -60,6 +60,33 @@ public class TestFuncionarioBusiness {
 	}
 	
 	@Test
+	void deveriaBuscarFuncionarioComBaseNoID() {
+		FuncionarioFilter filter = new FuncionarioFilter();
+		filter.setOpcoesCombo("1"); //Pesquisa por ID
+		filter.setValorBusca("2"); //ID = 2
+		
+		business.filtrarFuncionario(filter);
+		
+		assertDoesNotThrow(() -> Exception.class);
+	}
+	
+	@Test
+	void deveriaLancarExceptionAoBuscarFuncionarioInformandoCaractere() {
+		FuncionarioFilter filter = new FuncionarioFilter();
+		filter.setOpcoesCombo("1"); //Pesquisa por ID
+		filter.setValorBusca("A"); //ID = 2
+		
+		final String FOI_INFORMADO_CARACTER_NO_LUGAR_DE_UM_NUMERO = "Foi informado um caracter no lugar de um numero";
+		
+		BusinessException be = assertThrows(BusinessException.class, 
+				() -> business.filtrarFuncionario(filter));
+		
+		assertEquals("Foi informado um caracter no lugar de um numero", 
+			FOI_INFORMADO_CARACTER_NO_LUGAR_DE_UM_NUMERO);
+	}
+	
+
+	@Test
 	void deveriaIncluirFuncionarioComExito() {
 		funcionario.setNome("Funcionario teste");
 		
