@@ -70,7 +70,7 @@ public class FuncionarioDao extends Dao {
 	}
 	
 	/* Consulta funcionário filtrando pelo código */
-	public FuncionarioVo findByCodigo(Integer codigo){
+	public FuncionarioVo findByCodigo(Integer codigo) {//throws SQLException{
 		StringBuilder query = new StringBuilder("SELECT rowid id, nm_funcionario nome FROM funcionario "
 				+ "WHERE rowid = ?");
 		
@@ -83,15 +83,20 @@ public class FuncionarioDao extends Dao {
 			try(ResultSet rs = ps.executeQuery()){
 				FuncionarioVo vo =  null;
 				
+//				if (rs == null)
+//					throw new SQLException();
+				
 				while (rs.next()) {
 					vo = new FuncionarioVo();
 					vo.setRowid(rs.getString("id"));
 					vo.setNome(rs.getString("nome"));	
 				}
 				return vo;
+				
 			}
 		}catch (SQLException e) {
 			e.printStackTrace();
+			//throw e;
 		}		
 		return null;
 	}
@@ -114,7 +119,7 @@ public class FuncionarioDao extends Dao {
 	}
 	
 	/* Edição de funcionário */
-	public void updateFuncionario(FuncionarioVo funcionarioVo){
+	public void updateFuncionario(FuncionarioVo funcionarioVo) throws SQLException {
 		StringBuilder query = new StringBuilder("UPDATE funcionario SET nm_funcionario = ? WHERE rowid = ?");
 		
 		try(
@@ -126,17 +131,19 @@ public class FuncionarioDao extends Dao {
 			ps.setString(i++, funcionarioVo.getNome());
 			ps.setInt(i, Integer.parseInt(funcionarioVo.getRowid()));
 			
-			ps.executeUpdate();
+			if (ps.executeUpdate() == 0)
+				throw new SQLException("Codigo do funcionario nao encontrado");
 			
 		}catch (SQLException e) {
-			e.printStackTrace();
+			throw e;
+			//e.printStackTrace();
 		}
 	}
 	
 	/* Deleção de funcionário.
 	 * Ao deletar um funcionário, seus exames realizados também são deletados,
 	 * conforme parametrização de 'DELETE ON CASCADE' na tabela */
-	public void deleteFuncionario(Integer rowid) {
+	public void deleteFuncionario(Integer rowid) throws SQLException {
 		StringBuilder query = new StringBuilder("DELETE FROM funcionario WHERE rowid = ?");
 		try(
 			Connection con = getConexao();
@@ -144,10 +151,11 @@ public class FuncionarioDao extends Dao {
 			
 			ps.setInt(1, rowid);
 			
-			ps.executeUpdate();
+			if (ps.executeUpdate() == 0)
+				throw new SQLException();
 			
 		}catch (SQLException e) {
-			e.printStackTrace();
+			throw e;
 		}
 		
 	}

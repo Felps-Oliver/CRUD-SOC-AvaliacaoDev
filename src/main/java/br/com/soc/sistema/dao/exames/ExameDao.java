@@ -112,7 +112,7 @@ public class ExameDao extends Dao {
 	}
 	
 	/* Atualiza nome do exame */
-	public void updateExame(ExameVo exameVo) throws SQLException {//throws SQLException{
+	public void updateExame(ExameVo exameVo) throws SQLException {
 		StringBuilder query = new StringBuilder("UPDATE exame SET nm_exame = ? WHERE rowid = ?");
 		try(
 			Connection con = getConexao();
@@ -122,7 +122,7 @@ public class ExameDao extends Dao {
 			ps.setString(i++, exameVo.getNome());
 			ps.setInt(i, Integer.parseInt(exameVo.getRowid()));
 			
-			ps.executeUpdate();
+			//ps.executeUpdate();
 			
 			if (ps.executeUpdate() == 0)
 				throw new SQLException();

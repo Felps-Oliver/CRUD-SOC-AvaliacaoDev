@@ -1,5 +1,6 @@
 package br.com.soc.sistema.business.funcionario;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import br.com.soc.sistema.vo.FuncionarioVo;
 
 public class FuncionarioBusiness {
 
+	private static final String NAO_FOI_POSSIVEL_LOCALIZAR_O_FUNCIONARIO = "Nao foi possivel localizar o funcionario";
 	private static final String FOI_INFORMADO_CARACTER_NO_LUGAR_DE_UM_NUMERO = "Foi informado um caracter no lugar de um numero";
 	private FuncionarioDao dao;
 	
@@ -26,9 +28,15 @@ public class FuncionarioBusiness {
 	public FuncionarioVo buscarFuncionarioPor(String codigo) {
 		try {
 			Integer cod = Integer.parseInt(codigo);
-			return dao.findByCodigo(cod);
+			FuncionarioVo func = dao.findByCodigo(cod);
+			if (func == null)
+				throw new BusinessException(NAO_FOI_POSSIVEL_LOCALIZAR_O_FUNCIONARIO);
+			return func;
 		}catch (NumberFormatException e) {
 			throw new BusinessException(FOI_INFORMADO_CARACTER_NO_LUGAR_DE_UM_NUMERO);
+		}
+		catch (Exception sqle) {
+			throw new BusinessException(NAO_FOI_POSSIVEL_LOCALIZAR_O_FUNCIONARIO);
 		}
 	}
 	
@@ -43,6 +51,8 @@ public class FuncionarioBusiness {
 					funcionarios.add(dao.findByCodigo(codigo));
 				}catch (NumberFormatException e) {
 					throw new BusinessException(FOI_INFORMADO_CARACTER_NO_LUGAR_DE_UM_NUMERO);
+				}catch (Exception e) {
+					throw new BusinessException(NAO_FOI_POSSIVEL_LOCALIZAR_O_FUNCIONARIO);
 				}
 			break;
 
@@ -62,7 +72,9 @@ public class FuncionarioBusiness {
 			
 			dao.insertFuncionario(funcionarioVo);
 		} catch (Exception e) {
-			throw new BusinessException("Nao foi possivel realizar a inclusao do registro");
+			if (e.getMessage().isEmpty())
+				throw new BusinessException("Nao foi possivel realizar a inclusao do registro");
+			throw new BusinessException(e.getMessage());
 		}
 	}
 	
@@ -74,7 +86,9 @@ public class FuncionarioBusiness {
 
 			dao.updateFuncionario(funcionarioVo);
 		} catch (Exception e) {
-			throw new BusinessException("Nao foi possivel realizar a inclusao do registro");
+			if (e.getMessage().isEmpty())
+				throw new BusinessException("Nao foi possivel realizar a edicao do registro");
+			throw new BusinessException(e.getMessage());
 		}
 	}
 	
@@ -83,8 +97,10 @@ public class FuncionarioBusiness {
 		try {
 			dao.deleteFuncionario(rowid);
 		}
-		catch (BusinessException e) {
-			throw new BusinessException("Impossível excluir exame");
+		catch (BusinessException | SQLException e) {
+//			if (e.getMessage().isEmpty())
+//				throw new BusinessException("Codigo do funcionario nao encontrado");
+			throw new BusinessException("Codigo do funcionario nao encontrado");
 		}
 	}
 	

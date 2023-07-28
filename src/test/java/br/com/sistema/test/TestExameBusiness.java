@@ -1,5 +1,6 @@
 package br.com.sistema.test;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,11 +62,14 @@ public class TestExameBusiness {
 		lista.addAll(business.filtrarExames(filter));
 
 		// Verifica se há na lista o exame que foi incluído previamente
-		lista.forEach(exameLista -> {
-			if (exame.getNome().equals(exameLista.getNome())) {
-				assertEquals(exame.getNome(), exameLista.getNome());
+		boolean condicao = false;
+		for (int i = 0; i < lista.size(); i++) {
+			if (exame.getNome().equals(lista.get(i).getNome())){
+				condicao = true;
 			}
-		});
+		}
+		
+		assertTrue(condicao);
 	}
 
 	@Test
@@ -79,7 +83,7 @@ public class TestExameBusiness {
 
 	@Test
 	void deveriaEditarExame() {
-		exame.setRowid("1");
+		exame.setRowid("2");
 		exame.setNome("Teste");
 
 		business.editarExame(exame);
